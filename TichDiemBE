@@ -1,0 +1,54 @@
+#TichDiem.aspx.cs
+using System;
+using System.Collections.Generic;
+
+public partial class TichDiem : System.Web.UI.Page
+{
+    // Class mô tả quà tặng
+    public class QuaTang
+    {
+        public string TenQua { get; set; }
+        public int DiemCan { get; set; }
+        public string ImageUrl { get; set; }
+    }
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (!IsPostBack)
+        {
+            // Giả lập thông tin khách hàng – sau này bạn lấy từ Session / DB
+            string tenKhach = "Nguyễn Văn A";
+            int diemHienTai = 120;
+
+            lblTenKhach.Text = "Khách hàng: " + tenKhach;
+            lblDiemHienTai.Text = diemHienTai.ToString();
+
+            // Dữ liệu quà tặng demo
+            var dsQua = new List<QuaTang>
+            {
+                new QuaTang
+                {
+                    TenQua = "Voucher giảm 20%",
+                    DiemCan = 50,
+                    ImageUrl = "~/Images/qua_voucher20.png"
+                },
+                new QuaTang
+                {
+                    TenQua = "Ly giữ nhiệt Serenite",
+                    DiemCan = 120,
+                    ImageUrl = "~/Images/qua_ly.png"
+                },
+                new QuaTang
+                {
+                    TenQua = "Combo 2 phần nước",
+                    DiemCan = 200,
+                    ImageUrl = "~/Images/qua_combo.png"
+                }
+            };
+
+            // Gán vào Repeater để hiển thị hình + điểm
+            rptQua.DataSource = dsQua;
+            rptQua.DataBind();
+        }
+    }
+}
