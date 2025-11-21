@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Menu Quán Cafe</title>
+
+  <style>
+    body { font-family: Arial; background: #f3f4f6; margin: 0; }
+    .container { width: 900px; margin: 30px auto; background: #fff; padding: 20px;
+      border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .layout { display: grid; grid-template-columns: 30% 70%; gap: 20px; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { padding: 10px; border-radius: 8px; margin-bottom: 5px;
+      cursor: pointer; transition: 0.2s; }
+    li:hover { background: #eee; }
+    li.active { background: #dbeafe; border-left: 3px solid #2563eb; }
+    .product-card { display: flex; gap: 20px; }
+    img { width: 260px; height: 180px; object-fit: cover; border-radius: 10px; }
+    .price { font-size: 20px; font-weight: bold; color: #dc2626; }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Menu Quán Cafe</h1>
+
+    <div class="layout">
+      <div>
+        <h3>Danh sách món</h3>
+        <ul id="list"></ul>
+      </div>
+
+      <div id="detail">Chọn món để xem thông tin.</div>
+    </div>
+  </div>
+
+  <script>
+    const API = "http://localhost:3000/api/products";
+
+    const listEl = document.getElementById("list");
+    const detailEl = document.getElementById("detail");
+
+    async function loadList() {
+      const res = await fetch(API);
+      const data = await res.json();
+
+      listEl.innerHTML = "";
+      data.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item.name;
+        li.onclick = () => selectItem(item.id);
+        li.dataset.id = item.id;
+        listEl.appendChild(li);
+      });
+
+      if (data.length > 0) selectItem(data[0].id);
+    }
+
+    async function selectItem(id) {
+      [...listEl.children].forEach(li =>
+        li.classList.toggle("active", li.dataset.id == id)
+      );
+
+      const res = await fetch(`${API}/${id}`);
+      const p = await res.json();
+
+      detailEl.innerHTML = `
+        <div class="product-card">
+          <img src="${p.imageUrl}">
+          <div>
+            <h2>${p.name}</h2>
+            <p class="price">${p.price.toLocaleString("vi-VN")} ₫</p>
+            <p><b>Loại:</b> ${p.category}</p>
+            <p>${p.description}</p>
+            <p><b>Size:</b> ${p.size.join(", ")}</p>
+            <p><b>Tồn kho:</b> ${p.stock}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    loadList();
+  </script>
+
+</body>
+</html>
