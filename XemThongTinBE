@@ -1,0 +1,54 @@
+const express = require("express");
+const cors = require("cors");
+const app = express();
+const PORT = 3000;
+
+app.use(cors());
+app.use(express.json());
+
+const products = [
+  {
+    id: 1,
+    name: "Cà phê sữa đá",
+    price: 29000,
+    description: "Cà phê phin truyền thống pha với sữa đặc.",
+    category: "Cà phê",
+    stock: 20,
+    size: ["S", "M", "L"],
+    imageUrl: "https://via.placeholder.com/300x200?text=Ca+phe+sua+da"
+  },
+  {
+    id: 2,
+    name: "Bạc xỉu",
+    price: 32000,
+    description: "Vị sữa nhiều, cà phê nhẹ.",
+    category: "Cà phê",
+    stock: 10,
+    size: ["S", "M"],
+    imageUrl: "https://via.placeholder.com/300x200?text=Bac+xiu"
+  },
+  {
+    id: 3,
+    name: "Trà đào cam sả",
+    price: 39000,
+    description: "Vị chua ngọt, mát lạnh.",
+    category: "Trà trái cây",
+    stock: 14,
+    size: ["M", "L"],
+    imageUrl: "https://via.placeholder.com/300x200?text=Tra+dao+cam+sa"
+  }
+];
+
+app.get("/api/products", (req, res) => {
+  res.json(products);
+});
+
+app.get("/api/products/:id", (req, res) => {
+  const item = products.find(p => p.id == req.params.id);
+  if (!item) return res.status(404).json({ message: "Không tìm thấy sản phẩm" });
+  res.json(item);
+});
+
+app.listen(PORT, () => {
+  console.log(`Server chạy tại http://localhost:${PORT}`);
+});
