@@ -1,0 +1,25 @@
+// Models
+public class OrderItem {
+    public string Name { get; set; }
+    public int Price { get; set; }
+    public int Quantity { get; set; }
+}
+
+public class ShippingInfo {
+    public string FullName { get; set; }
+    public string Phone { get; set; }
+    public string Address { get; set; }
+}
+
+public class CreateOrderRequest {
+    public List<OrderItem> Items { get; set; }
+    public int TotalAmount { get; set; }
+    public ShippingInfo ShippingInfo { get; set; }
+    public string PaymentMethod { get; set; }
+}
+
+public class CreateOrderResponse {
+    public string OrderCode { get; set; }
+    public string Status { get; set; }
+    public string Message { get; set; }
+}
