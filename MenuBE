@@ -1,0 +1,114 @@
+using System;
+using System.Data;
+
+public partial class Menu : System.Web.UI.Page
+{
+    // Bảng menu lưu trong ViewState
+    private DataTable MenuTable
+    {
+        get
+        {
+            if (ViewState["Menu"] == null)
+            {
+                DataTable dt = new DataTable();
+                dt.Columns.Add("MaMon");
+                dt.Columns.Add("TenMon");
+                dt.Columns.Add("Gia", typeof(double));
+                dt.Columns.Add("MoTa");
+
+                // Thêm dữ liệu mẫu
+                dt.Rows.Add("CF01", "Cà phê đen đá", 25000, "Đậm vị, nguyên chất");
+                dt.Rows.Add("TS01", "Trà sữa truyền thống", 30000, "Ngon chuẩn vị Đài Loan");
+
+                ViewState["Menu"] = dt;
+            }
+            return (DataTable)ViewState["Menu"];
+        }
+        set { ViewState["Menu"] = value; }
+    }
+
+    protected void Page_Load(object sender, EventArgs e)
+    {
+        if (!IsPostBack)
+        {
+            BindMenu();
+        }
+    }
+
+    private void BindMenu()
+    {
+        gvMenu.DataSource = MenuTable;
+        gvMenu.DataBind();
+    }
+
+    protected void btnThem_Click(object sender, EventArgs e)
+    {
+        if (!Page.IsValid) return;
+
+        DataTable dt = MenuTable;
+
+        dt.Rows.Add(
+            txtMaMon.Text.Trim(),
+            txtTenMon.Text.Trim(),
+            double.Parse(txtGia.Text.Trim()),
+            txtMoTa.Text.Trim()
+        );
+        MenuTable = dt;
+
+        lblThongBao.Text = "Đã thêm món thành công!";
+        ClearForm();
+        BindMenu();
+    }
+
+    private void ClearForm()
+    {
+        txtMaMon.Text = "";
+        txtTenMon.Text = "";
+        txtGia.Text = "";
+        txtMoTa.Text = "";
+    }
+
+    protected void gvMenu_RowDeleting(object sender, System.Web.UI.WebControls.GridViewDeleteEventArgs e)
+    {
+        DataTable dt = MenuTable;
+        dt.Rows.RemoveAt(e.RowIndex);
+        MenuTable = dt;
+
+        lblThongBao.Text = "Đã xóa thành công!";
+        BindMenu();
+    }
+
+    protected void gvMenu_RowEditing(object sender, System.Web.UI.WebControls.GridViewEditEventArgs e)
+    {
+        gvMenu.EditIndex = e.NewEditIndex;
+        BindMenu();
+    }
+
+    protected void gvMenu_RowCancelingEdit(object sender, System.Web.UI.WebControls.GridViewCancelEditEventArgs e)
+    {
+        gvMenu.EditIndex = -1;
+        BindMenu();
+    }
+
+    protected void gvMenu_RowUpdating(object sender, System.Web.UI.WebControls.GridViewUpdateEventArgs e)
+    {
+        DataTable dt = MenuTable;
+
+        string ma = gvMenu.Rows[e.RowIndex].Cells[0].Text;
+
+        TextBox txtTen = (TextBox)gvMenu.Rows[e.RowIndex].Cells[1].Controls[0];
+        TextBox txtGia = (TextBox)gvMenu.Rows[e.RowIndex].Cells[2].Controls[0];
+        TextBox txtMoTa = (TextBox)gvMenu.Rows[e.RowIndex].Cells[3].Controls[0];
+
+        dt.Rows[e.RowIndex]["TenMon"] = txtTen.Text.Trim();
+        dt.Rows[e.RowIndex]["Gia"] = double.Parse(txtGia.Text.Trim());
+        dt.Rows[e.RowIndex]["MoTa"] = txtMoTa.Text.Trim();
+
+        MenuTable = dt;
+
+        gvMenu.EditIndex = -1;
+
+        lblThongBao.Text = "Đã cập nhật thành công!";
+        BindMenu();
+    }
+}
