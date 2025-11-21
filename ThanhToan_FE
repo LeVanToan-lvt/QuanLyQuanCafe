@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanh toán cafe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .payment-modal {
+            width: 320px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 24px;
+        }
+
+        .payment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .payment-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .close-btn {
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .line-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 4px 0;
+            font-size: 14px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            margin-bottom: 16px;
+            font-weight: bold;
+        }
+
+        .section-title {
+            font-size: 14px;
+            margin: 12px 0 4px;
+        }
+
+        .btn-gray {
+            width: 100%;
+            background: #e0e0e0;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: #e0e0e0;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .shipping-form input {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 13px;
+        }
+
+        #message {
+            margin-top: 10px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="payment-modal">
+    <div class="payment-header">
+        <h2>Thanh toán</h2>
+        <span class="close-btn" onclick="alert('Đóng popup (demo)')">&times;</span>
+    </div>
+
+    <!-- Danh sách món -->
+    <div class="line-item">
+        <span>Cafe đen</span>
+        <span>10.000 vnd</span>
+    </div>
+    <div class="line-item">
+        <span>Cafe sữa</span>
+        <span>12.000 vnd</span>
+    </div>
+
+    <div class="total-row">
+        <span>Tổng cộng</span>
+        <span id="total-amount">22.000 vnd</span>
+    </div>
+
+    <!-- Thông tin giao hàng -->
+    <div class="section-title">Thông tin giao hàng</div>
+    <button id="btnShowShipping" class="btn-gray">Nhập thông tin</button>
+
+    <div id="shippingForm" class="shipping-form hidden">
+        <input type="text" id="fullName" placeholder="Họ tên">
+        <input type="text" id="phone" placeholder="Số điện thoại">
+        <input type="text" id="address" placeholder="Địa chỉ giao hàng">
+    </div>
+
+    <!-- Phương thức thanh toán -->
+    <div class="section-title">Phương thức thanh toán</div>
+    <div class="radio-group">
+        <label>
+            <input type="radio" name="paymentMethod" value="CASH" checked>
+            Tiền mặt
+        </label>
+        <label>
+            <input type="radio" name="paymentMethod" value="BANK_TRANSFER">
+            Chuyển khoản
+        </label>
+    </div>
+
+    <!-- Nút thanh toán -->
+    <button id="btnPay" class="btn-primary">Thanh toán</button>
+
+    <!-- Thông báo -->
+    <div id="message"></div>
+</div>
+
+<script>
+    // ================== DỮ LIỆU ĐƠN HÀNG (demo) ==================
+    const orderItems = [
+        { name: "Cafe đen", price: 10000, quantity: 1 },
+        { name: "Cafe sữa", price: 12000, quantity: 1 }
+    ];
+    const totalAmount = 22000; // số nguyên để gửi backend
+
+    // ================== 1. HIỆN / ẨN FORM GIAO HÀNG ==================
+    const btnShowShipping = document.getElementById('btnShowShipping');
+    const shippingForm = document.getElementById('shippingForm');
+
+    btnShowShipping.addEventListener('click', () => {
+        shippingForm.classList.toggle('hidden');
+    });
+
+    // ================== 2. NÚT THANH TOÁN ==================
+    const btnPay = document.getElementById('btnPay');
+    const messageDiv = document.getElementById('message');
+
+    btnPay.addEventListener('click', async () => {
+        messageDiv.textContent = "";
+
+        // Lấy thông tin giao hàng
+        const fullName = document.getElementById('fullName').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const address = document.getElementById('address').value.trim();
+
+        // Lấy phương thức thanh toán
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+        // Validate đơn giản
+        if (!fullName || !phone || !address) {
+            messageDiv.style.color = "red";
+            messageDiv.textContent = "Vui lòng nhập đầy đủ thông tin giao hàng.";
+            return;
+        }
+
+        // Tạo object gửi lên backend
+        const payload = {
+            items: orderItems,
+            totalAmount: totalAmount,
+            shippingInfo: {
+                fullName: fullName,
+                phone: phone,
+                address: address
+            },
+            paymentMethod: paymentMethod
+        };
+
+        try {
+            const response = await fetch("http://localhost:8080/api/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("HTTP status " + response.status);
+            }
+
+            const data = await response.json();
+            messageDiv.style.color = "green";
+            messageDiv.textContent = "Thanh toán thành công! Mã đơn: " + data.orderCode;
+        } catch (err) {
+            console.error(err);
+            messageDiv.style.color = "red";
+            messageDiv.textContent = "Có lỗi xảy ra khi thanh toán.";
+        }
+    });
+</script>
+
+</body>
+</html>
