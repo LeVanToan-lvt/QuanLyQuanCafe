@@ -1,0 +1,69 @@
+<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Menu.aspx.cs"
+    Inherits="Menu" MasterPageFile="~/Site1.Master" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+
+<div class="container" style="max-width:900px; margin:auto; padding:20px;">
+
+    <h2 style="text-align:center;">Quản lý Menu Món</h2>
+
+    <!-- FORM THÊM MÓN -->
+    <asp:Panel runat="server" CssClass="card"
+        Style="padding:15px; margin-bottom:20px; box-shadow:0 0 8px #ccc; border-radius:10px;">
+        <h4>Thêm món mới</h4>
+
+        <div>
+            <asp:Label Text="Mã món:" runat="server"/>
+            <asp:TextBox ID="txtMaMon" runat="server" CssClass="form-control" Width="200px"/>
+            <asp:RequiredFieldValidator ControlToValidate="txtMaMon" runat="server" ErrorMessage="Nhập mã món!" ForeColor="Red"/>
+        </div>
+
+        <div>
+            <asp:Label Text="Tên món:" runat="server"/>
+            <asp:TextBox ID="txtTenMon" runat="server" CssClass="form-control" Width="60%"/>
+            <asp:RequiredFieldValidator ControlToValidate="txtTenMon" runat="server" ErrorMessage="Nhập tên món!" ForeColor="Red"/>
+        </div>
+
+        <div>
+            <asp:Label Text="Giá:" runat="server"/>
+            <asp:TextBox ID="txtGia" runat="server" CssClass="form-control" Width="150px"/>
+            <asp:RequiredFieldValidator ControlToValidate="txtGia" runat="server" ErrorMessage="Nhập giá!" ForeColor="Red"/>
+        </div>
+
+        <div>
+            <asp:Label Text="Mô tả:" runat="server"/>
+            <asp:TextBox ID="txtMoTa" runat="server" TextMode="MultiLine" Rows="3" Width="100%" CssClass="form-control"/>
+        </div>
+
+        <asp:Button ID="btnThem" Text="Thêm món" CssClass="btn btn-success"
+            runat="server" OnClick="btnThem_Click" />
+
+        <asp:Label ID="lblThongBao" runat="server" ForeColor="Green" Style="margin-left:10px;"></asp:Label>
+    </asp:Panel>
+
+    <!-- DANH SÁCH MENU -->
+    <asp:Panel runat="server" CssClass="card"
+        Style="padding:15px; box-shadow:0 0 8px #ccc; border-radius:10px;">
+        <h4>Danh sách món</h4>
+
+        <asp:GridView ID="gvMenu" runat="server" AutoGenerateColumns="False"
+            CssClass="table table-bordered"
+            OnRowDeleting="gvMenu_RowDeleting"
+            OnRowEditing="gvMenu_RowEditing"
+            OnRowCancelingEdit="gvMenu_RowCancelingEdit"
+            OnRowUpdating="gvMenu_RowUpdating">
+            <Columns>
+                <asp:BoundField DataField="MaMon" HeaderText="Mã món" ReadOnly="True" />
+                <asp:BoundField DataField="TenMon" HeaderText="Tên món" />
+                <asp:BoundField DataField="Gia" HeaderText="Giá (VND)" />
+                <asp:BoundField DataField="MoTa" HeaderText="Mô tả" />
+
+                <asp:CommandField ShowEditButton="True" EditText="Sửa" />
+                <asp:CommandField ShowDeleteButton="True" DeleteText="Xóa" />
+            </Columns>
+        </asp:GridView>
+    </asp:Panel>
+
+</div>
+
+</asp:Content>
